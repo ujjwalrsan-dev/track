@@ -19,6 +19,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -38,6 +40,7 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kyant.backdrop.backdrops.layerBackdrop
@@ -223,7 +226,14 @@ private fun TrackerCard(tracker: TrackerInfo, summary: TrackerSummary?, onClick:
                     // [Kotlin] `summary.stats` calls the generated getter: Java's summary.getStats().
                     summary.stats.forEach { stat ->
                         Column(Modifier.weight(1f)) {
-                            Text(stat.value, style = MaterialTheme.typography.headlineSmall)
+                            // Shrinks long values (e.g. large balances) instead of colliding with the next column.
+                            BasicText(
+                                text = stat.value,
+                                maxLines = 1,
+                                autoSize = TextAutoSize.StepBased(minFontSize = 12.sp, maxFontSize = 24.sp),
+                                style = MaterialTheme.typography.headlineSmall.copy(color = MaterialTheme.colorScheme.onSurface),
+                                modifier = Modifier.padding(end = 12.dp),
+                            )
                             Text(
                                 stringResource(stat.label),
                                 style = MaterialTheme.typography.labelMedium,
