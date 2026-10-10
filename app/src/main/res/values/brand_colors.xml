@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Sampled from branding/trackit-logo.png -->
+    <color name="brand_teal">#013E4B</color>
+    <color name="brand_cream">#FCF9F2</color>
+</resources>

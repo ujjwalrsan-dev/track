@@ -1,3 +1,172 @@
 <resources>
-    <string name="app_name">track</string>
+    <string name="app_name">Track</string>
+
+    <!-- Common -->
+    <string name="back">Back</string>
+    <string name="cancel">Cancel</string>
+    <string name="ok">OK</string>
+    <string name="save">Save</string>
+    <string name="undo">Undo</string>
+
+    <!-- Home -->
+    <string name="home_subtitle">Your trackers</string>
+    <string name="home_coming_soon_title">More trackers coming</string>
+    <string name="home_coming_soon_body">Habits, workouts, reading and more will live here.</string>
+    <string name="home_last_14_days">Last 14 days</string>
+
+    <!-- DSA tracker -->
+    <string name="dsa_title">DSA</string>
+    <string name="dsa_description">Problems solved and daily activity</string>
+    <string name="dsa_stat_solved">solved</string>
+    <string name="dsa_stat_streak">day streak</string>
+    <string name="dsa_stat_active_days">active days</string>
+    <string name="dsa_total">Solved</string>
+    <string name="dsa_streak">Streak</string>
+    <string name="dsa_active_days">Active days</string>
+    <string name="dsa_best_streak">Best %1$d</string>
+    <string name="dsa_all_time">All time</string>
+    <string name="dsa_by_difficulty">By difficulty</string>
+    <string name="dsa_view_month">Month</string>
+    <string name="dsa_view_year">Year</string>
+    <string name="dsa_prev_month">Previous month</string>
+    <string name="dsa_next_month">Next month</string>
+    <string name="dsa_less">Less</string>
+    <string name="dsa_more">More</string>
+    <string name="dsa_log_problem">Log problem</string>
+    <string name="dsa_empty_day">No submissions on this day</string>
+    <string name="dsa_delete">Delete</string>
+    <string name="dsa_deleted">Deleted \"%1$s\"</string>
+
+    <!-- Log sheet -->
+    <string name="log_title">Log a problem</string>
+    <string name="log_problem">Problem</string>
+    <string name="log_problem_hint">e.g. Two Sum</string>
+    <string name="log_platform">Platform</string>
+    <string name="log_difficulty">Difficulty</string>
+    <string name="log_topic">Topic (optional)</string>
+    <string name="log_solved_on">Solved on</string>
+
+    <!-- To Do tracker -->
+    <string name="todo_title">To Do</string>
+    <string name="todo_description">Tasks with stages, by day and week</string>
+    <string name="todo_stat_today">today</string>
+    <string name="todo_stat_week">done this week</string>
+    <string name="todo_stat_open">open</string>
+    <string name="todo_view_day">Day</string>
+    <string name="todo_view_week">Week</string>
+    <string name="todo_view_month">Month</string>
+    <string name="todo_view_year">Year</string>
+    <string name="todo_more_views">More views</string>
+    <string name="todo_add_task">Add task</string>
+    <string name="todo_empty_day">Nothing planned for this day</string>
+    <string name="todo_empty_week_day">No tasks</string>
+    <string name="todo_anytime">Anytime</string>
+    <string name="todo_done">Done</string>
+    <string name="todo_stage_progress">Stage %1$d of %2$d · %3$s</string>
+    <string name="todo_complete_stage">Complete current stage</string>
+    <string name="todo_delete">Delete task</string>
+    <string name="todo_deleted">Deleted \"%1$s\"</string>
+    <string name="todo_progress">%1$d of %2$d done</string>
+    <string name="todo_prev">Previous</string>
+    <string name="todo_next">Next</string>
+
+    <!-- New task sheet -->
+    <string name="todo_new_task">New task</string>
+    <string name="todo_task_name">Task</string>
+    <string name="todo_task_hint">e.g. Write blog post</string>
+    <string name="todo_when">When</string>
+    <string name="todo_add_time">Add time</string>
+    <string name="todo_remove_time">Remove time</string>
+    <string name="todo_pick_time">Select time</string>
+    <string name="todo_stages">Stages</string>
+    <string name="todo_stage_name">Add a stage</string>
+    <string name="todo_stage_hint">e.g. Draft</string>
+    <string name="todo_add_stage">Add stage</string>
+    <string name="todo_remove_stage">Remove stage</string>
+    <string name="todo_stages_empty">No stages: the task is a single step.</string>
+
+    <!-- Budget tracker -->
+    <string name="budget_title">Budget</string>
+    <string name="budget_description">Accounts, income, expenses and transfers</string>
+    <string name="budget_stat_balance">balance</string>
+    <string name="budget_stat_today">spent today</string>
+    <string name="budget_stat_month">spent this month</string>
+    <string name="budget_grand_totals">Grand totals</string>
+    <string name="budget_accounts">Accounts</string>
+    <string name="budget_add_account">Add account</string>
+    <string name="budget_add_transaction">Add transaction</string>
+    <string name="budget_period_day">Day</string>
+    <string name="budget_period_week">Week</string>
+    <string name="budget_period_month">Month</string>
+    <string name="budget_income">Income</string>
+    <string name="budget_expense">Expense</string>
+    <string name="budget_transfer">Transfer</string>
+    <string name="budget_net">Net</string>
+    <string name="budget_empty_period">No transactions in this period</string>
+    <string name="budget_transfer_title">Transfer</string>
+    <string name="budget_deleted">Transaction deleted</string>
+
+    <!-- Transaction sheet -->
+    <string name="budget_new_transaction">New transaction</string>
+    <string name="budget_edit_transaction">Edit transaction</string>
+    <string name="budget_amount">Amount</string>
+    <string name="budget_account">Account</string>
+    <string name="budget_from">From</string>
+    <string name="budget_to">To</string>
+    <string name="budget_category">Category</string>
+    <string name="budget_note">Note (optional)</string>
+    <string name="budget_when">When</string>
+    <string name="budget_delete_transaction">Delete transaction</string>
+    <string name="budget_need_two_accounts">Add a second account to make transfers.</string>
+
+    <!-- Account and total sheets -->
+    <string name="budget_new_account">New account</string>
+    <string name="budget_edit_account">Edit account</string>
+    <string name="budget_account_name">Account name</string>
+    <string name="budget_account_hint">e.g. HDFC Savings</string>
+    <string name="budget_opening_balance">Opening balance</string>
+    <string name="budget_counts_towards">Counts towards</string>
+    <string name="budget_delete_account">Delete account</string>
+    <string name="budget_delete_account_title">Delete %1$s?</string>
+    <string name="budget_delete_account_body">This also deletes its %1$d transactions, including transfers to or from it.</string>
+    <string name="budget_edit_total">Edit grand total</string>
+    <string name="budget_total_name">Name</string>
+    <string name="budget_included_accounts">Included accounts</string>
+    <string name="budget_delete">Delete</string>
+
+    <plurals name="budget_accounts_count">
+        <item quantity="one">%d account</item>
+        <item quantity="other">%d accounts</item>
+    </plurals>
+
+    <!-- Widgets -->
+    <string name="widget_todo_name">Today\'s tasks</string>
+    <string name="widget_todo_description">Today\'s to-dos with their stages. Complete stages right from your home screen.</string>
+    <string name="widget_dsa_name">DSA progress</string>
+    <string name="widget_dsa_description">Problems solved, your streak and recent activity, with quick logging.</string>
+    <string name="widget_today">Today</string>
+    <string name="widget_nothing_today">Nothing planned today</string>
+    <string name="widget_tap_to_add">Tap + to add a task</string>
+    <string name="widget_today_solved">today</string>
+    <string name="widget_budget_name">Today\'s transactions</string>
+    <string name="widget_budget_description">Today\'s income, expenses and transfers at a glance.</string>
+    <string name="widget_no_transactions">No transactions today</string>
+
+    <plurals name="todo_tasks_count">
+        <item quantity="one">%d task</item>
+        <item quantity="other">%d tasks</item>
+    </plurals>
+
+    <plurals name="submissions_count">
+        <item quantity="one">%d submission</item>
+        <item quantity="other">%d submissions</item>
+    </plurals>
+    <plurals name="active_days_count">
+        <item quantity="one">%d active day</item>
+        <item quantity="other">%d active days</item>
+    </plurals>
+    <plurals name="submissions_last_year">
+        <item quantity="one">%d submission in the last year</item>
+        <item quantity="other">%d submissions in the last year</item>
+    </plurals>
 </resources>

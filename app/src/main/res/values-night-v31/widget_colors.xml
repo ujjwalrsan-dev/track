@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="widget_heat_0">#26FFFFFF</color>
+    <color name="widget_heat_1">@android:color/system_accent1_800</color>
+    <color name="widget_heat_2">@android:color/system_accent1_600</color>
+    <color name="widget_heat_3">@android:color/system_accent1_400</color>
+    <color name="widget_heat_4">@android:color/system_accent1_200</color>
+</resources>

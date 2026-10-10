@@ -2,4 +2,11 @@
 <resources>
 
     <style name="Theme.Track" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <!-- Launch theme: brand-teal splash with the wordmark; swaps to Theme.Track once the app is ready. -->
+    <style name="Theme.Track.Splash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/brand_teal</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/splash_logo</item>
+        <item name="postSplashScreenTheme">@style/Theme.Track</item>
+    </style>
 </resources>
