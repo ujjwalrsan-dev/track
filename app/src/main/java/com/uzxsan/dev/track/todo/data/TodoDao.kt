@@ -26,6 +26,9 @@ interface TodoDao {
     suspend fun insertStages(stages: List<TodoStage>)
 
     @Update
+    suspend fun updateTask(task: TodoTask)
+
+    @Update
     suspend fun updateStages(stages: List<TodoStage>)
 
     @Delete

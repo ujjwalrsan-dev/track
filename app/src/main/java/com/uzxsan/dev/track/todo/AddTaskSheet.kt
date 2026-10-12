@@ -52,6 +52,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.kyant.backdrop.Backdrop
 import com.uzxsan.dev.track.R
@@ -62,6 +63,7 @@ import com.uzxsan.dev.track.ui.theme.accentAssistChipBorder
 import com.uzxsan.dev.track.ui.theme.accentAssistChipColors
 import com.uzxsan.dev.track.ui.theme.accentButtonColors
 import com.uzxsan.dev.track.ui.theme.accentSuggestionChipBorder
+import com.uzxsan.dev.track.todo.data.TodoTask
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalTime
@@ -84,7 +86,14 @@ private fun List<String>.toMutableStateList() = mutableStateListOf<String>().als
 fun AddTaskSheet(
     initialDate: LocalDate,
     onDismiss: () -> Unit,
-    onSave: (title: String, date: LocalDate, time: LocalTime?, stages: List<String>) -> Unit,
+    onSave: (
+        title: String,
+        date: LocalDate,
+        time: LocalTime?,
+        stages: List<String>,
+        notes: String,
+        links: String,
+    ) -> Unit,
     backdrop: Backdrop = LocalBackdrop.current,
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -96,6 +105,8 @@ fun AddTaskSheet(
     var timeMinutes by rememberSaveable { mutableStateOf(-1) }
     val stages = rememberSaveable(saver = stageListSaver) { mutableStateListOf() }
     var newStage by rememberSaveable { mutableStateOf("") }
+    var notes by rememberSaveable { mutableStateOf("") }
+    var links by rememberSaveable { mutableStateOf("") }
     var showDatePicker by remember { mutableStateOf(false) }
     var showTimePicker by remember { mutableStateOf(false) }
 
@@ -211,10 +222,17 @@ fun AddTaskSheet(
                 }
             }
 
+            NotesAndLinksFields(
+                notes = notes,
+                onNotesChange = { notes = it },
+                links = links,
+                onLinksChange = { links = it },
+            )
+
             Button(
                 onClick = {
                     scope.launch { sheetState.hide() }.invokeOnCompletion {
-                        onSave(title, date, time, stages.toList())
+                        onSave(title, date, time, stages.toList(), notes, links)
                     }
                 },
                 enabled = title.isNotBlank(),
@@ -260,6 +278,77 @@ fun AddTaskSheet(
             },
         ) { TimePicker(state = pickerState) }
     }
+}
+
+/** Edits the notes and links of an existing [task]. */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun EditTaskDetailsSheet(
+    task: TodoTask,
+    onDismiss: () -> Unit,
+    onSave: (notes: String, links: String) -> Unit,
+    backdrop: Backdrop = LocalBackdrop.current,
+) {
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val scope = rememberCoroutineScope()
+    var notes by rememberSaveable(task.id) { mutableStateOf(task.notes) }
+    var links by rememberSaveable(task.id) { mutableStateOf(task.links) }
+
+    GlassBottomSheet(onDismissRequest = onDismiss, sheetState = sheetState, backdrop = backdrop) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .imePadding()
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 24.dp)
+                .padding(bottom = 24.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+            Text(task.title, style = MaterialTheme.typography.headlineSmall)
+            NotesAndLinksFields(
+                notes = notes,
+                onNotesChange = { notes = it },
+                links = links,
+                onLinksChange = { links = it },
+            )
+            Button(
+                onClick = {
+                    scope.launch { sheetState.hide() }.invokeOnCompletion { onSave(notes, links) }
+                },
+                colors = accentButtonColors(),
+                modifier = Modifier.fillMaxWidth(),
+            ) { Text(stringResource(R.string.save)) }
+        }
+    }
+}
+
+@Composable
+private fun NotesAndLinksFields(
+    notes: String,
+    onNotesChange: (String) -> Unit,
+    links: String,
+    onLinksChange: (String) -> Unit,
+) {
+    PremiumTextField(
+        value = notes,
+        onValueChange = onNotesChange,
+        label = stringResource(R.string.todo_notes),
+        placeholder = stringResource(R.string.todo_notes_hint),
+        leadingIcon = painterResource(R.drawable.ic_notes),
+        singleLine = false,
+        keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
+        modifier = Modifier.fillMaxWidth(),
+    )
+    PremiumTextField(
+        value = links,
+        onValueChange = onLinksChange,
+        label = stringResource(R.string.todo_links),
+        placeholder = stringResource(R.string.todo_links_hint),
+        leadingIcon = painterResource(R.drawable.ic_link),
+        singleLine = false,
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri),
+        modifier = Modifier.fillMaxWidth(),
+    )
 }
 
 @Composable

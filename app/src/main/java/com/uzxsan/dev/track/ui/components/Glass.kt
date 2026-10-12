@@ -9,6 +9,7 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Arrangement
@@ -56,6 +57,7 @@ import com.kyant.backdrop.effects.blur
 import com.kyant.backdrop.effects.lens
 import com.kyant.backdrop.effects.vibrancy
 import com.uzxsan.dev.track.R
+import com.uzxsan.dev.track.ui.theme.accentStrong
 
 /** The app-wide background layer that every glass surface refracts. */
 val LocalBackdrop = staticCompositionLocalOf<Backdrop> { emptyBackdrop() }
@@ -235,6 +237,56 @@ fun GlassIconButton(
     ) {
         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Icon(icon, contentDescription, tint = MaterialTheme.colorScheme.onSurface)
+        }
+    }
+}
+
+/**
+ * Frosted glass button tinted with [color] and white content, for actions inside glass cards.
+ * Shows [icon] and, when given, [text]; without text it is a round icon button.
+ */
+@Composable
+fun GlassTintedButton(
+    icon: Painter,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    text: String? = null,
+    contentDescription: String? = text,
+    color: Color = accentStrong(),
+    backdrop: Backdrop = LocalBackdrop.current,
+) {
+    val shape = RoundedCornerShape(50)
+    GlassSurface(
+        modifier = modifier
+            .height(40.dp)
+            .then(if (text == null) Modifier.size(40.dp) else Modifier)
+            .border(1.dp, Color.White.copy(alpha = 0.35f), shape),
+        shape = shape,
+        tint = color.copy(alpha = 0.8f),
+        blurRadius = 12.dp,
+        refractionHeight = 8.dp,
+        refractionAmount = 16.dp,
+        chromaticAberration = false,
+        backdrop = backdrop,
+        onClick = onClick,
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxHeight()
+                .then(if (text == null) Modifier.fillMaxWidth() else Modifier.padding(horizontal = 14.dp)),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(icon, contentDescription.takeIf { text == null }, Modifier.size(18.dp), tint = Color.White)
+            if (text != null) {
+                Text(
+                    text = text,
+                    style = MaterialTheme.typography.labelLarge,
+                    fontWeight = FontWeight.SemiBold,
+                    color = Color.White,
+                    modifier = Modifier.padding(start = 6.dp),
+                )
+            }
         }
     }
 }

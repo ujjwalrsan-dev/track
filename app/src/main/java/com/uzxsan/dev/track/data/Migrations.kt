@@ -37,5 +37,14 @@ object Migrations {
         }
     }
 
-    val ALL = arrayOf(MIGRATION_1_2, MIGRATION_2_3)
+    /** v4 adds notes, links and the rollover origin date to To Do tasks. */
+    val MIGRATION_3_4 = object : Migration(3, 4) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            db.execSQL("ALTER TABLE `todo_tasks` ADD COLUMN `notes` TEXT NOT NULL DEFAULT ''")
+            db.execSQL("ALTER TABLE `todo_tasks` ADD COLUMN `links` TEXT NOT NULL DEFAULT ''")
+            db.execSQL("ALTER TABLE `todo_tasks` ADD COLUMN `originalDate` INTEGER")
+        }
+    }
+
+    val ALL = arrayOf(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
 }

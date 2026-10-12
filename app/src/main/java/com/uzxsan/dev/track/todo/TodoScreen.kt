@@ -108,6 +108,8 @@ private fun TodoView.label() = when (this) {
 private class TaskActions(
     val advance: (TaskWithStages) -> Unit,
     val toggle: (TodoStage) -> Unit,
+    val rollover: (TaskWithStages) -> Unit,
+    val edit: (TaskWithStages) -> Unit,
     val delete: (TaskWithStages) -> Unit,
 )
 
@@ -126,6 +128,7 @@ fun TodoScreen(
     var monthIndex by rememberSaveable { mutableIntStateOf(today.year * 12 + today.monthValue - 1) }
     var showSheet by rememberSaveable { mutableStateOf(openAddOnStart) }
     var menuOpen by remember { mutableStateOf(false) }
+    var editingTaskId by rememberSaveable { mutableStateOf<Long?>(null) }
     val selected = LocalDate.ofEpochDay(selectedEpochDay)
     val month = YearMonth.of(monthIndex / 12, monthIndex % 12 + 1)
 
@@ -148,6 +151,21 @@ fun TodoScreen(
         TaskActions(
             advance = viewModel::advance,
             toggle = viewModel::toggle,
+            rollover = { item ->
+                viewModel.rollover(item)
+                val target = LocalDate.ofEpochDay(item.task.rolledOver(LocalDate.now()).date)
+                scope.launch {
+                    snackbar.showSnackbar(
+                        message = context.getString(
+                            R.string.todo_rolled_over,
+                            item.task.title,
+                            target.format(DateTimeFormatter.ofPattern("EEE, d MMM")),
+                        ),
+                        duration = SnackbarDuration.Short,
+                    )
+                }
+            },
+            edit = { item -> editingTaskId = item.task.id },
             delete = { item ->
                 viewModel.delete(item)
                 scope.launch {
@@ -252,10 +270,23 @@ fun TodoScreen(
         AddTaskSheet(
             initialDate = selected,
             onDismiss = { showSheet = false },
-            onSave = { title, date, time, stages ->
-                viewModel.add(title, date, time, stages)
+            onSave = { title, date, time, stages, notes, links ->
+                viewModel.add(title, date, time, stages, notes, links)
                 select(date)
                 showSheet = false
+            },
+            backdrop = glassBackdrop,
+        )
+    }
+
+    val editing = editingTaskId?.let { id -> state.tasksByDate.values.flatten().firstOrNull { it.task.id == id } }
+    if (editing != null) {
+        EditTaskDetailsSheet(
+            task = editing.task,
+            onDismiss = { editingTaskId = null },
+            onSave = { notes, links ->
+                viewModel.editDetails(editing.task, notes, links)
+                editingTaskId = null
             },
             backdrop = glassBackdrop,
         )
@@ -562,6 +593,8 @@ private fun LazyListScope.weekList(
                     item = item,
                     onAdvance = { actions.advance(item) },
                     onToggleStage = actions.toggle,
+                    onRollover = { actions.rollover(item) },
+                    onEdit = { actions.edit(item) },
                     onDelete = { actions.delete(item) },
                     showTime = true,
                     modifier = Modifier.animateItem(),
@@ -621,6 +654,8 @@ private fun TimelineRow(
             item = item,
             onAdvance = { actions.advance(item) },
             onToggleStage = actions.toggle,
+            onRollover = { actions.rollover(item) },
+            onEdit = { actions.edit(item) },
             onDelete = { actions.delete(item) },
             modifier = Modifier.weight(1f),
         )

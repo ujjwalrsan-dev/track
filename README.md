@@ -73,7 +73,24 @@ Plan your day and week, and move tasks forward stage by stage.
 - **Day timeline** (primary) — tasks laid out on a vertical timeline by time, or under *Anytime*.
 - **Week view** (primary) — every day of the week with its progress.
 - **Month & Year overviews** (from the ⋯ menu) — a calendar of task counts and twelve month tiles with completion bars.
+- **Roll over** — push an unfinished task to another day without losing its progress (see [How rollover works](#how-rollover-works)).
+- **Notes & links** — add notes and any number of URLs (one per line) to a task. Links open in the browser; `https://` is added when a link has no scheme. Edit both later with **Edit** on the expanded card.
 - Optional date and time per task, stage suggestions, and delete with **Undo**.
+
+#### How rollover works
+
+Tap a task to expand it, then tap **Roll over**. The button only appears on tasks that aren't done yet.
+
+- **Where it goes:** a task scheduled for today or later moves to the **next day**. An overdue task moves to **today**, not to the day after its old date, so it never lands in the past.
+- **What it keeps:** the time, notes, links and every completed stage come along. Only the date changes, and the task is moved, not copied.
+- **The delay tag:** the first rollover remembers the day the task was originally planned for. From then on the card shows a red **Delayed by N days** pill, counted from that original day. Rolling the same task over again makes N grow; it never resets.
+- A snackbar confirms where the task went, e.g. *Moved "Write post" to Tue, 13 Oct*.
+
+| Planned for | Rolled over on | Moves to | Tag |
+|---|---|---|---|
+| 12 Oct (today) | 12 Oct | 13 Oct | Delayed by 1 day |
+| 13 Oct (rolled again) | 12 Oct | 14 Oct | Delayed by 2 days |
+| 9 Oct (overdue) | 12 Oct | 12 Oct | Delayed by 3 days |
 
 ### Budget
 
@@ -181,8 +198,14 @@ From the command line:
 ./gradlew :app:testDebugUnitTest      # run the unit tests
 ```
 
-The unit tests cover the core logic of every tracker — DSA streaks, To Do stage progression and weeks,
-and Budget balances, grand totals, period ranges and amount parsing.
+The unit tests cover the core logic of every tracker — DSA streaks, To Do stage progression, weeks,
+rollover and link parsing, and Budget balances, grand totals, period ranges and amount parsing.
+
+Instrumented tests (on a device or emulator) cover the database migrations, To Do persistence and the task card UI:
+
+```bash
+./gradlew :app:connectedDebugAndroidTest  # note: uninstalls the app afterwards, clearing its data
+```
 
 ### Regenerating the app icon
 

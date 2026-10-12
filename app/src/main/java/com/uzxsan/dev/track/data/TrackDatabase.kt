@@ -27,7 +27,7 @@ import com.uzxsan.dev.track.todo.data.TodoTask
         GrandTotal::class,
         GrandTotalAccount::class,
     ],
-    version = 3,
+    version = 4,
     exportSchema = false,
 )
 abstract class TrackDatabase : RoomDatabase() {

@@ -26,17 +26,38 @@ class TodoViewModel(private val repository: TodoRepository) : ViewModel() {
         .map { tasks -> TodoUiState(tasks.groupBy { it.task.localDate }) }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), TodoUiState())
 
-    fun add(title: String, date: LocalDate, time: LocalTime?, stageNames: List<String>) {
+    fun add(
+        title: String,
+        date: LocalDate,
+        time: LocalTime?,
+        stageNames: List<String>,
+        notes: String = "",
+        links: String = "",
+    ) {
         viewModelScope.launch {
             repository.add(
                 TodoTask(
                     title = title.trim(),
                     date = date.toEpochDay(),
                     timeMinutes = time?.let { it.hour * 60 + it.minute },
+                    notes = notes.trim(),
+                    links = parseLinks(links).joinToString("\n"),
                 ),
                 stageNames.map { it.trim() }.filter { it.isNotEmpty() },
             )
         }
+    }
+
+    fun editDetails(task: TodoTask, notes: String, links: String) {
+        viewModelScope.launch {
+            repository.update(task.copy(notes = notes.trim(), links = parseLinks(links).joinToString("\n")))
+        }
+    }
+
+    /** Moves an unfinished task to the next day, keeping its stage progress. */
+    fun rollover(item: TaskWithStages) {
+        if (item.isDone) return
+        viewModelScope.launch { repository.update(item.task.rolledOver(LocalDate.now())) }
     }
 
     fun advance(item: TaskWithStages) = update(item.advance(System.currentTimeMillis()))

@@ -1,5 +1,6 @@
 package com.uzxsan.dev.track.todo.data
 
+import androidx.room.ColumnInfo
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.ForeignKey
@@ -9,7 +10,11 @@ import androidx.room.Relation
 import java.time.LocalDate
 import java.time.LocalTime
 
-/** A task scheduled on [date] (epoch day), optionally at [timeMinutes] past midnight. */
+/**
+ * A task scheduled on [date] (epoch day), optionally at [timeMinutes] past midnight.
+ * [links] holds one URL per line. [originalDate] is the day the task was first planned for,
+ * set the first time it is rolled over, so the delay is `date - originalDate`.
+ */
 @Entity(tableName = "todo_tasks", indices = [Index("date")])
 data class TodoTask(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
@@ -17,6 +22,9 @@ data class TodoTask(
     val date: Long,
     val timeMinutes: Int? = null,
     val createdAt: Long = System.currentTimeMillis(),
+    @ColumnInfo(defaultValue = "''") val notes: String = "",
+    @ColumnInfo(defaultValue = "''") val links: String = "",
+    val originalDate: Long? = null,
 ) {
     val localDate: LocalDate get() = LocalDate.ofEpochDay(date)
     val localTime: LocalTime? get() = timeMinutes?.let { LocalTime.of(it / 60, it % 60) }
