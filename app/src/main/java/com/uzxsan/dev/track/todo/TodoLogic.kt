@@ -2,6 +2,7 @@ package com.uzxsan.dev.track.todo
 
 import com.uzxsan.dev.track.todo.data.TaskWithStages
 import com.uzxsan.dev.track.todo.data.TodoStage
+import com.uzxsan.dev.track.todo.data.TodoTask
 import java.time.DayOfWeek
 import java.time.Instant
 import java.time.LocalDate
@@ -28,6 +29,26 @@ fun TaskWithStages.advance(now: Long): List<TodoStage> =
 /** Toggles one stage, keeping completion time only while it is done. */
 fun TodoStage.toggled(now: Long): TodoStage =
     if (done) copy(done = false, completedAt = null) else copy(done = true, completedAt = now)
+
+/** Days between the day the task was first planned for and its current day; 0 if never rolled over. */
+val TodoTask.delayDays: Long get() = originalDate?.let { (date - it).coerceAtLeast(0) } ?: 0
+
+/**
+ * Moves an unfinished task to the next day — or to [today] if that is later, so overdue tasks
+ * land somewhere actionable. The first rollover remembers the original day for the delay tag.
+ */
+fun TodoTask.rolledOver(today: LocalDate): TodoTask {
+    val next = maxOf(date + 1, today.toEpochDay())
+    return copy(date = next, originalDate = originalDate ?: date)
+}
+
+/** Splits user-entered links (one per line or space-separated), dropping blanks and duplicates. */
+fun parseLinks(text: String): List<String> =
+    text.split(Regex("\\s+")).map { it.trim() }.filter { it.isNotEmpty() }.distinct()
+
+/** Adds https:// to scheme-less links so they open in a browser. */
+fun linkUri(link: String): String =
+    if (Regex("^[a-zA-Z][a-zA-Z0-9+.-]*:").containsMatchIn(link)) link else "https://$link"
 
 fun weekStart(date: LocalDate, firstDayOfWeek: DayOfWeek): LocalDate =
     date.minusDays(((date.dayOfWeek.value - firstDayOfWeek.value + 7) % 7).toLong())

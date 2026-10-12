@@ -86,4 +86,46 @@ class TodoLogicTest {
         assertEquals(2, s.doneThisWeek)
         assertEquals(1, s.open)
     }
+
+    @Test
+    fun rolloverMovesToNextDayAndRemembersOrigin() {
+        val t = TodoTask(id = 1, title = "t", date = today.toEpochDay())
+        val once = t.rolledOver(today)
+        assertEquals(today.plusDays(1).toEpochDay(), once.date)
+        assertEquals(today.toEpochDay(), once.originalDate)
+        assertEquals(1L, once.delayDays)
+
+        val twice = once.rolledOver(today)
+        assertEquals(today.toEpochDay(), twice.originalDate)
+        assertEquals(2L, twice.delayDays)
+    }
+
+    @Test
+    fun overdueTaskRollsOverToToday() {
+        val t = TodoTask(id = 1, title = "t", date = today.minusDays(3).toEpochDay())
+        val rolled = t.rolledOver(today)
+        assertEquals(today.toEpochDay(), rolled.date)
+        assertEquals(3L, rolled.delayDays)
+    }
+
+    @Test
+    fun neverRolledOverTaskHasNoDelay() {
+        assertEquals(0L, TodoTask(id = 1, title = "t", date = today.toEpochDay()).delayDays)
+    }
+
+    @Test
+    fun linksAreSplitTrimmedAndDeduplicated() {
+        assertEquals(
+            listOf("example.com", "https://a.dev/x"),
+            parseLinks("  example.com\n\nhttps://a.dev/x  example.com "),
+        )
+        assertTrue(parseLinks("   ").isEmpty())
+    }
+
+    @Test
+    fun schemeLessLinksGetHttps() {
+        assertEquals("https://example.com", linkUri("example.com"))
+        assertEquals("http://x.io", linkUri("http://x.io"))
+        assertEquals("mailto:me@x.io", linkUri("mailto:me@x.io"))
+    }
 }

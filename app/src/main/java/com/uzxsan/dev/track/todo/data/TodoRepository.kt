@@ -12,6 +12,8 @@ class TodoRepository(private val dao: TodoDao) {
         dao.insertWithStages(task, names.mapIndexed { i, name -> TodoStage(taskId = 0, position = i, name = name) })
     }
 
+    suspend fun update(task: TodoTask) = dao.updateTask(task)
+
     suspend fun updateStages(stages: List<TodoStage>) = dao.updateStages(stages)
 
     suspend fun delete(task: TodoTask) = dao.deleteTask(task)

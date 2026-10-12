@@ -5,6 +5,7 @@ import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ChipColors
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SegmentedButtonColors
@@ -14,6 +15,7 @@ import androidx.compose.material3.SuggestionChipDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
+import androidx.compose.ui.graphics.luminance
 
 /*
  * Component colors built from the theme's primary family (the accent that tints the glass cards),
@@ -81,3 +83,13 @@ fun accentButtonColors(): ButtonColors {
         disabledContentColor = primary.copy(alpha = 0.5f),
     )
 }
+
+private val ColorScheme.isDark: Boolean get() = surface.luminance() < 0.5f
+
+/** Deep accent that stays readable under white content in both themes (dark primary is pale). */
+@Composable
+fun accentStrong(): Color = MaterialTheme.colorScheme.let { if (it.isDark) it.inversePrimary else it.primary }
+
+/** Deep error tone for destructive glass buttons with white content. */
+@Composable
+fun errorStrong(): Color = MaterialTheme.colorScheme.let { if (it.isDark) it.errorContainer else it.error }
