@@ -68,6 +68,7 @@ import com.uzxsan.dev.track.money.data.MoneyAccount
 import com.uzxsan.dev.track.money.data.MoneyTransaction
 import com.uzxsan.dev.track.todo.weekDays
 import com.uzxsan.dev.track.ui.components.GlassExtendedFab
+import com.uzxsan.dev.track.ui.components.GlassFilterChip
 import com.uzxsan.dev.track.ui.components.GlassSurface
 import com.uzxsan.dev.track.ui.components.GlassTopBar
 import com.uzxsan.dev.track.ui.components.LocalBackdrop
@@ -105,10 +106,13 @@ fun MoneyScreen(
     var anchorEpoch by rememberSaveable { mutableLongStateOf(today.toEpochDay()) }
     var editor by rememberSaveable { mutableStateOf(if (openAddOnStart) Editor.NewTransaction else null) }
     var editorId by rememberSaveable { mutableLongStateOf(0L) }
+    var filterIds by rememberSaveable { mutableStateOf(emptyList<Long>()) }
     val anchor = LocalDate.ofEpochDay(anchorEpoch)
 
     val range = periodRange(anchor, period, firstDayOfWeek)
-    val inPeriod = state.snapshot.transactions.inRange(range)
+    // Ignore filters for accounts that have since been deleted.
+    val accountFilter = filterIds.filterTo(mutableSetOf()) { id -> state.snapshot.accounts.any { it.id == id } }
+    val inPeriod = state.snapshot.transactions.inRange(range).forAccounts(accountFilter)
     val flow = flowTotals(inPeriod)
     val accountName: (Long?) -> String = { id -> state.account(id)?.name ?: "—" }
 
@@ -176,10 +180,19 @@ fun MoneyScreen(
                     onNext = { anchorEpoch = shiftPeriod(anchor, period, 1).toEpochDay() },
                 )
             }
+            if (state.snapshot.accounts.size > 1) {
+                item(key = "filter") {
+                    AccountFilterRow(
+                        accounts = state.snapshot.accounts,
+                        selected = accountFilter,
+                        onChange = { filterIds = it.toList() },
+                    )
+                }
+            }
             if (inPeriod.isEmpty()) {
                 item(key = "empty") {
                     Text(
-                        stringResource(R.string.budget_empty_period),
+                        stringResource(if (accountFilter.isEmpty()) R.string.budget_empty_period else R.string.budget_empty_filtered),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         textAlign = TextAlign.Center,
@@ -469,6 +482,30 @@ private fun PeriodCard(
                 FlowStat(stringResource(R.string.budget_expense), format.format(flow.expense), scheme.onSurface, Modifier.weight(1f))
                 FlowStat(stringResource(R.string.budget_net), format.formatSigned(flow.net), scheme.onSurface, Modifier.weight(1f))
             }
+        }
+    }
+}
+
+/** Chips to narrow the transaction list to one or more accounts; "All accounts" clears the filter. */
+@Composable
+private fun AccountFilterRow(accounts: List<MoneyAccount>, selected: Set<Long>, onChange: (Set<Long>) -> Unit) {
+    Row(
+        modifier = Modifier.horizontalScroll(rememberScrollState()),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        GlassFilterChip(
+            text = stringResource(R.string.budget_filter_all),
+            selected = selected.isEmpty(),
+            onClick = { onChange(emptySet()) },
+        )
+        accounts.forEach { account ->
+            val isSelected = account.id in selected
+            GlassFilterChip(
+                text = account.name,
+                selected = isSelected,
+                onClick = { onChange(if (isSelected) selected - account.id else selected + account.id) },
+                icon = painterResource(R.drawable.ic_wallet),
+            )
         }
     }
 }

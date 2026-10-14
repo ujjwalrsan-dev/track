@@ -41,11 +41,11 @@ import androidx.compose.ui.unit.dp
 import com.uzxsan.dev.track.R
 import com.uzxsan.dev.track.todo.data.TaskWithStages
 import com.uzxsan.dev.track.todo.data.TodoStage
+import com.uzxsan.dev.track.ui.components.GlassButtonStyle
 import com.uzxsan.dev.track.ui.components.GlassSurface
 import com.uzxsan.dev.track.ui.components.GlassTintedButton
 import com.uzxsan.dev.track.ui.theme.accentStrong
 import com.uzxsan.dev.track.ui.theme.accentTrack
-import com.uzxsan.dev.track.ui.theme.errorStrong
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 
@@ -149,6 +149,7 @@ fun TaskCard(
                                 icon = painterResource(R.drawable.ic_rollover),
                                 text = stringResource(R.string.todo_rollover),
                                 onClick = onRollover,
+                                style = GlassButtonStyle.Secondary,
                             )
                         }
                         GlassTintedButton(
@@ -156,12 +157,13 @@ fun TaskCard(
                             text = stringResource(R.string.todo_edit),
                             contentDescription = stringResource(R.string.todo_edit_details),
                             onClick = onEdit,
+                            style = GlassButtonStyle.Secondary,
                         )
                         GlassTintedButton(
                             icon = painterResource(R.drawable.ic_delete),
                             contentDescription = stringResource(R.string.todo_delete),
                             onClick = onDelete,
-                            color = errorStrong(),
+                            style = GlassButtonStyle.Destructive,
                         )
                     }
                 }

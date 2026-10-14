@@ -111,6 +111,8 @@
     <string name="budget_transfer">Transfer</string>
     <string name="budget_net">Net</string>
     <string name="budget_empty_period">No transactions in this period</string>
+    <string name="budget_empty_filtered">No transactions for the selected accounts in this period</string>
+    <string name="budget_filter_all">All accounts</string>
     <string name="budget_transfer_title">Transfer</string>
     <string name="budget_deleted">Transaction deleted</string>
 

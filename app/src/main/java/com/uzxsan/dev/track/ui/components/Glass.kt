@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -24,6 +25,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BottomSheetDefaults
@@ -47,7 +49,10 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.kyant.backdrop.Backdrop
@@ -58,6 +63,10 @@ import com.kyant.backdrop.effects.lens
 import com.kyant.backdrop.effects.vibrancy
 import com.uzxsan.dev.track.R
 import com.uzxsan.dev.track.ui.theme.accentStrong
+import com.uzxsan.dev.track.ui.theme.errorStrong
+import com.uzxsan.dev.track.ui.theme.idleGlassTint
+import com.uzxsan.dev.track.ui.theme.onTintedGlass
+import com.uzxsan.dev.track.ui.theme.secondaryStrong
 
 /** The app-wide background layer that every glass surface refracts. */
 val LocalBackdrop = staticCompositionLocalOf<Backdrop> { emptyBackdrop() }
@@ -242,7 +251,34 @@ fun GlassIconButton(
 }
 
 /**
- * Frosted glass button tinted with [color] and white content, for actions inside glass cards.
+ * Look of a [GlassTintedButton]. Every style keeps text at 4.5:1 or better over the glass backdrop
+ * in both themes.
+ */
+enum class GlassButtonStyle {
+    /** Primary action: strong accent at 80% with white content. */
+    Accent,
+
+    /** Secondary actions (rollover, edit): secondary at 30%. */
+    Secondary,
+
+    /** Destructive actions (delete): error red at 30%. */
+    Destructive;
+
+    /** Glass tint for this style. */
+    @Composable
+    fun tint(): Color = when (this) {
+        Accent -> accentStrong().copy(alpha = 0.8f)
+        Secondary -> secondaryStrong().copy(alpha = 0.3f)
+        Destructive -> errorStrong().copy(alpha = 0.3f)
+    }
+
+    /** Text and icon colour on [tint]. */
+    @Composable
+    fun contentColor(): Color = if (this == Accent) Color.White else onTintedGlass()
+}
+
+/**
+ * Frosted glass button for actions inside glass cards, tinted per [style].
  * Shows [icon] and, when given, [text]; without text it is a round icon button.
  */
 @Composable
@@ -252,17 +288,18 @@ fun GlassTintedButton(
     modifier: Modifier = Modifier,
     text: String? = null,
     contentDescription: String? = text,
-    color: Color = accentStrong(),
+    style: GlassButtonStyle = GlassButtonStyle.Accent,
     backdrop: Backdrop = LocalBackdrop.current,
 ) {
     val shape = RoundedCornerShape(50)
+    val contentColor = style.contentColor()
     GlassSurface(
         modifier = modifier
             .height(40.dp)
             .then(if (text == null) Modifier.size(40.dp) else Modifier)
             .border(1.dp, Color.White.copy(alpha = 0.35f), shape),
         shape = shape,
-        tint = color.copy(alpha = 0.8f),
+        tint = style.tint(),
         blurRadius = 12.dp,
         refractionHeight = 8.dp,
         refractionAmount = 16.dp,
@@ -277,16 +314,67 @@ fun GlassTintedButton(
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Icon(icon, contentDescription.takeIf { text == null }, Modifier.size(18.dp), tint = Color.White)
+            Icon(icon, contentDescription.takeIf { text == null }, Modifier.size(18.dp), tint = contentColor)
             if (text != null) {
                 Text(
                     text = text,
                     style = MaterialTheme.typography.labelLarge,
                     fontWeight = FontWeight.SemiBold,
-                    color = Color.White,
+                    color = contentColor,
                     modifier = Modifier.padding(start = 6.dp),
                 )
             }
+        }
+    }
+}
+
+/**
+ * Liquid glass filter chip: frosted when idle, and in the [GlassButtonStyle.Accent] style when [selected].
+ */
+@Composable
+fun GlassFilterChip(
+    text: String,
+    selected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    icon: Painter? = null,
+    backdrop: Backdrop = LocalBackdrop.current,
+) {
+    val shape = RoundedCornerShape(50)
+    val scheme = MaterialTheme.colorScheme
+    val contentColor = if (selected) GlassButtonStyle.Accent.contentColor() else scheme.onSurface
+    GlassSurface(
+        modifier = modifier
+            .height(36.dp)
+            .border(1.dp, Color.White.copy(alpha = 0.35f), shape)
+            .semantics { this.selected = selected },
+        shape = shape,
+        tint = if (selected) GlassButtonStyle.Accent.tint() else idleGlassTint(),
+        blurRadius = 12.dp,
+        refractionHeight = 8.dp,
+        refractionAmount = 16.dp,
+        chromaticAberration = false,
+        backdrop = backdrop,
+        onClick = onClick,
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxHeight()
+                .padding(horizontal = 14.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            if (icon != null) {
+                Icon(icon, contentDescription = null, Modifier.size(16.dp), tint = if (selected) contentColor else scheme.primary)
+                Spacer(Modifier.width(6.dp))
+            }
+            Text(
+                text = text,
+                style = MaterialTheme.typography.labelLarge,
+                fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Medium,
+                color = contentColor,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
         }
     }
 }
