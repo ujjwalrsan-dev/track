@@ -52,6 +52,16 @@ class MoneyLogicTest {
     }
 
     @Test
+    fun accountFilterKeepsTransfersOnEitherSide() {
+        val all = snapshot.transactions
+        assertEquals(all, all.forAccounts(emptySet()))
+        assertEquals(listOf(TransactionType.Expense), all.forAccounts(setOf(1L)).map { it.type })
+        assertEquals(listOf(TransactionType.Transfer), all.forAccounts(setOf(3L)).map { it.type })
+        assertEquals(listOf(TransactionType.Income, TransactionType.Transfer), all.forAccounts(setOf(2L)).map { it.type })
+        assertEquals(all, all.forAccounts(setOf(1L, 2L)))
+    }
+
+    @Test
     fun transfersAreNotIncomeOrExpense() {
         val flow = flowTotals(snapshot.transactions)
         assertEquals(20_000L, flow.income)

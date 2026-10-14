@@ -68,6 +68,10 @@ fun flowTotals(transactions: List<MoneyTransaction>): FlowTotals = FlowTotals(
 fun List<MoneyTransaction>.inRange(range: ClosedRange<LocalDate>): List<MoneyTransaction> =
     filter { it.localDate in range }
 
+/** Transactions touching any of [accountIds], including transfers to or from them; all of them when empty. */
+fun List<MoneyTransaction>.forAccounts(accountIds: Set<Long>): List<MoneyTransaction> =
+    if (accountIds.isEmpty()) this else filter { it.accountId in accountIds || it.toAccountId in accountIds }
+
 /** Formats and parses amounts stored in minor units, in the device's currency. */
 class MoneyFormat(locale: Locale = Locale.getDefault()) {
     private val currency: Currency = runCatching { Currency.getInstance(locale) }.getOrElse { Currency.getInstance("USD") }

@@ -67,12 +67,15 @@ Plan your day and week, and move tasks forward stage by stage.
   <img src="Docs/screenshots/todo_week.png" width="220" alt="To Do – week view" />
   &nbsp;
   <img src="Docs/screenshots/todo_add.png" width="220" alt="To Do – new task sheet" />
+  &nbsp;
+  <img src="Docs/screenshots/todo_task.png" width="220" alt="To Do – expanded task with Roll over, Edit and Delete" />
 </p>
 
 - **Tasks with stages** — give a task ordered steps (e.g. *Plan → Draft → Review → Publish*). The ✓ button completes the current stage; the task is done when every stage is.
 - **Day timeline** (primary) — tasks laid out on a vertical timeline by time, or under *Anytime*.
 - **Week view** (primary) — every day of the week with its progress.
 - **Month & Year overviews** (from the ⋯ menu) — a calendar of task counts and twelve month tiles with completion bars.
+- **Expand a task** — tap a card to see its stage checklist, notes and links, with glass **Roll over**, **Edit** and **Delete** buttons.
 - **Roll over** — push an unfinished task to another day without losing its progress (see [How rollover works](#how-rollover-works)).
 - **Notes & links** — add notes and any number of URLs (one per line) to a task. Links open in the browser; `https://` is added when a link has no scheme. Edit both later with **Edit** on the expanded card.
 - Optional date and time per task, stage suggestions, and delete with **Undo**.
@@ -99,6 +102,8 @@ Accounts, income, expenses and transfers — with grand totals you define.
 <p>
   <img src="Docs/screenshots/budget.png" width="220" alt="Budget – day view" />
   &nbsp;
+  <img src="Docs/screenshots/budget_filter.png" width="220" alt="Budget – transactions filtered to one account" />
+  &nbsp;
   <img src="Docs/screenshots/budget_month.png" width="220" alt="Budget – month view" />
   &nbsp;
   <img src="Docs/screenshots/budget_add.png" width="220" alt="Budget – new transaction sheet" />
@@ -108,6 +113,8 @@ Accounts, income, expenses and transfers — with grand totals you define.
 - **Multiple accounts**, each with an opening balance and a live balance.
 - **Three grand totals** (default *Net worth*, *Spendable*, *Savings*) — rename them and choose exactly which accounts count towards each.
 - **Day / Week / Month** transaction lists with income, expense and net totals for every period and every day.
+- **Filter by account** — chips above the transactions narrow the list to one or more accounts. Transfers show up when
+  either side is selected, and the period's income, expense and net follow the filter. **All accounts** clears it.
 - Amounts are stored in minor units (paise / cents) so totals never drift, and are shown in your device's currency.
 - Thin, light typography throughout — no heavy bold numbers.
 
@@ -135,6 +142,9 @@ Widgets refresh instantly when data changes (in the app or from the widget) and 
 
 - **Liquid Glass** — cards, the floating top bar, buttons and bottom sheets blur and refract the content behind them
   (via [Backdrop](https://github.com/Kyant0/AndroidLiquidGlass)). Clear glass for floating buttons, frosted glass for sheets.
+- **Glass controls** — filter chips are frosted when idle and use the *Accent* button style when selected; card buttons come in
+  three styles (`GlassButtonStyle`): *Accent* for the main action, *Secondary* for edit and rollover, and *Destructive*
+  (red) for delete. Each keeps text at WCAG AA contrast (4.5:1) over the glass.
 - **Material You** — colours come from your wallpaper (Android 12+), with a soft colourful backdrop behind the glass.
 - **Inter** typeface — an open-source alternative to SF Pro, using *Inter Display* for headings and *Inter* for text.
 - Quick shared-axis transitions between screens and a branded splash screen.
@@ -199,7 +209,7 @@ From the command line:
 ```
 
 The unit tests cover the core logic of every tracker — DSA streaks, To Do stage progression, weeks,
-rollover and link parsing, and Budget balances, grand totals, period ranges and amount parsing.
+rollover and link parsing, and Budget balances, grand totals, period ranges, account filtering and amount parsing.
 
 Instrumented tests (on a device or emulator) cover the database migrations, To Do persistence and the task card UI:
 
@@ -222,7 +232,8 @@ swift branding/make_icons.swift       # run from the project root (macOS)
 1. Add its entities and DAO under a new package, register them in `TrackDatabase`, bump the version
    and add a migration in `data/Migrations.kt`.
 2. Expose a repository from `AppContainer`.
-3. Build the screen with the shared glass components (`GlassTopBar`, `GlassSurface`, `GlassExtendedFab`, `GlassBottomSheet`).
+3. Build the screen with the shared glass components (`GlassTopBar`, `GlassSurface`, `GlassExtendedFab`, `GlassBottomSheet`,
+   `GlassTintedButton` with a `GlassButtonStyle`, `GlassFilterChip`).
 4. Add a route in `navigation/TrackNavHost.kt` and an entry in `home/Trackers.kt`, plus a summary in `HomeViewModel`.
 
 ---

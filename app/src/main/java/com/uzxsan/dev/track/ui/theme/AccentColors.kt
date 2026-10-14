@@ -93,3 +93,17 @@ fun accentStrong(): Color = MaterialTheme.colorScheme.let { if (it.isDark) it.in
 /** Deep error tone for destructive glass buttons with white content. */
 @Composable
 fun errorStrong(): Color = MaterialTheme.colorScheme.let { if (it.isDark) it.errorContainer else it.error }
+
+/** Deep secondary tone for glass button tints (dark secondary is pale). */
+@Composable
+fun secondaryStrong(): Color = MaterialTheme.colorScheme.let { if (it.isDark) it.secondaryContainer else it.secondary }
+
+/** Content on lightly tinted glass: near-black in light theme, white in dark (keeps 4.5:1 over the backdrop). */
+@Composable
+fun onTintedGlass(): Color = MaterialTheme.colorScheme.let { if (it.isDark) Color.White else it.onSurface }
+
+/** Untinted frosted glass for idle controls; white glass under pale dark-theme text would wash out. */
+@Composable
+fun idleGlassTint(): Color = MaterialTheme.colorScheme.let {
+    if (it.isDark) it.surface.copy(alpha = 0.35f) else Color.White.copy(alpha = 0.35f)
+}
